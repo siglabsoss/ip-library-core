@@ -1,0 +1,29 @@
+[*]
+[*] GTKWave Analyzer v3.3.66 (w)1999-2015 BSI
+[*] Tue Feb 13 00:04:35 2018
+[*]
+[dumpfile] "/media/psf/Home/workspace/software_parent_repo/higgs_sdr_rev2/libs/ip-library/ring_bus/out/ring_bus.vcd"
+[dumpfile_mtime] "Tue Feb 13 00:04:06 2018"
+[dumpfile_size] 179325
+[savefile] "/media/psf/Home/workspace/software_parent_repo/higgs_sdr_rev2/libs/ip-library/ring_bus/sim/ring_bus.gtkw"
+[timestart] 0
+[size] 2560 1395
+[pos] -1 -1
+*-9.000000 965 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] TOP.
+[sst_width] 313
+[signals_width] 295
+[sst_expanded] 1
+[sst_vpaned_height] 420
+@28
+TOP.ring_bus.i_sysclk
+TOP.ring_bus.i_serial_bus
+@29
+TOP.ring_bus.o_serial_bus
+@28
+TOP.ring_bus.o_rd_of
+TOP.ring_bus.o_rd_buf_empty
+@22
+TOP.ring_bus.o_rd_data[31:0]
+[pattern_trace] 1
+[pattern_trace] 0

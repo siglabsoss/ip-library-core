@@ -1,0 +1,9 @@
+Purpose: This module generates sine/cosine samples at its
+output (after some pipeline delay) given an input sequence
+of numbers that determine the phase. The input sequence
+should be in units of normalized radians (fixed point
+numbers corresponding to equal notches around the unit
+circle).
+
+Designer: Daryl (daryl@siglabs.com)
+Date: 8/2/2017

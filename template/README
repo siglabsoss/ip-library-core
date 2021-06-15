@@ -1,0 +1,12 @@
+Purpose: The purpose of this module is to provide a template to
+demonstrate how the IP directory structure might be applied. It
+demonstrates the bare minimum requirements for publishing IP to
+this repository. It meets all requirements except the synthesis
+requirement. This module is called a_module, but the directory
+is called template to distinguish it as a template and ease the
+creation of the directory structure for new modules. For actual
+IP, the root directory name should be altered to reflect the
+name of the IP.
+
+Designer: Daryl (daryl@siglabs.com)
+Date: 1/13/2017

@@ -1,0 +1,6 @@
+log -assert "console.log"
+# CREATE A LIBRARY CALLED WORK
+vlib work
+The system cannot find the path specified.
+VSIMSA: Error: Execution of the command failed (returned code is 1).
+./sim.do(4) Script: Break at line 4.
