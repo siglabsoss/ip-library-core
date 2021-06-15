@@ -1,0 +1,11 @@
+#--  Synopsys, Inc.
+#--  Version L-2016.03L-1
+#--  Project file C:\FPGA\gravitinolink\modules\cmd_interface\syn\proj_1.prd
+#
+### Watch Implementation type ###
+#
+watch_impl -all
+#
+### Watch Implementation properties ###
+#
+watch_prop -clear

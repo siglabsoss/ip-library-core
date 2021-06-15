@@ -1,0 +1,9 @@
+Purpose: The purpose of this module is to interpolate by 313 (using
+a compensated CIC filter structure). The corresponding system
+has a passband that corresponds to -0.225 to 0.225 of the Nyquist
+bandwidth at the slower sampling rate (or -0.225/313 to 0.225/313
+at the faster sampling rate). The passband ripple is guaranteed
+(see associated tests) to be less than 0.5 dB.
+
+Designer: Daryl (daryl@siglabs.com)
+Date: 3/14/2017

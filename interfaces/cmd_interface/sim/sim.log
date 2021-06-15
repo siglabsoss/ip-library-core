@@ -1,0 +1,49 @@
+ELBREAD: Elaboration process.
+ELBREAD: Warning: Module 'cmd_slave' does not have a `timescale directive, but previous modules do.
+ELBREAD: Warning: Module 'cmd_master' does not have a `timescale directive, but previous modules do.
+ELBREAD: Elaboration time 0.0 [s].
+KERNEL: Main thread initiated.
+KERNEL: Kernel process initialization phase.
+KERNEL: Time resolution set to 10ps.
+ELAB2: Elaboration final pass...
+ELAB2: Create instances ...
+ELAB2: Create instances complete.
+SLP: Started
+SLP: Elaboration phase ...
+SLP: Elaboration phase ... done : 0.3 [s]
+SLP: Generation phase ...
+SLP: Generation phase ... done : 0.7 [s]
+SLP: Finished : 1.1 [s]
+SLP: 0 primitives and 19 (100.00%) other processes in SLP
+SLP: 69 (98.57%) signals in SLP and 1 (1.43%) interface signals
+ELAB2: Elaboration final pass complete - time: 1.3 [s].
+KERNEL: SLP loading done - time: 0.0 [s].
+KERNEL: Warning: You are using the Active-HDL Lattice Edition. The performance of simulation is running at a reduced rate.
+KERNEL: Warning: Contact Aldec for available upgrade options - sales@aldec.com.
+KERNEL: SLP simulation initialization done - time: 0.0 [s].
+KERNEL: Kernel process initialization done.
+Allocation: Simulator allocated 6073 kB (elbread=1280 elab2=4648 kernel=145 sdf=0)
+KERNEL: ASDB file was created in location C:\FPGA\ip-library\interfaces\cmd_interface\sim\wave.asdb
+# LOG ALL SIGNALS IN DESIGN
+trace -decl tb_*
+VSIMSA: 8 signal(s) traced.
+trace -decl tb_cmd_bus[0]/*
+VSIMSA: 6 signal(s) traced.
+trace -decl tb_cmd_bus[1]/*
+VSIMSA: 6 signal(s) traced.
+# RUN UNTIL NO MORE EVENTS TO SIMULATE
+run -all
+RUNTIME: RUNTIME_0068 tb_intf_cmd.sv (64): $finish called.
+KERNEL: Time: 11225 ns,  Iteration: 0,  Instance: /tb_intf_cmd,  Process: @INITIAL#27_2@.
+KERNEL: stopped at time: 11225 ns
+VSIM: Simulation has finished. There are no more test vectors to simulate.
+# LAUNCH ACTIVE-HDL AND VIEW WAVEFORM
+#
+# Use -do "open -asdb wave.asdb" if you don't have a wave.do file you'd like to use.
+#
+# Use -do "view wave; waveconnect wave.asdb; do wave.do; wavezoom -fit" if you do.
+runexe avhdl.exe -nosplash -do "open -asdb wave.asdb" "view wave; waveconnect wave.asdb" 
+#runexe avhdl.exe -nosplash -do "view wave; waveconnect wave.asdb; do wave.do; wavezoom -fit" 
+# PEACE OUT
+bye
+VSIM: Simulation has finished.

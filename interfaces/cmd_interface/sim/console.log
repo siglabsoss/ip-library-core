@@ -1,0 +1,37 @@
+log -assert "console.log"
+# CREATE A LIBRARY CALLED WORK
+vlib work
+ALIB: Library `work' attached.
+work = C:\FPGA\ip-library\interfaces\cmd_interface\sim\work\work.lib
+# COMPILE VERILOG AND SYSTEM VERILOG SOURCES 
+vlog -work work ../hdl/*.sv 
+Pass 1. Scanning modules hierarchy.
+Pass 2. Processing instantiations.
+Pass 3. Processing behavioral statements.
+Running Optimizer.
+ELB/DAG code generating.
+Unit top modules: cmd_master cmd_ncmd_intf cmd_slave intf_demux.
+$root top modules: cmd_master cmd_ncmd_intf cmd_slave intf_demux.
+Compile success 0 Errors 0 Warnings  Analysis time: 1[s].
+Warning: ALOG: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+done
+vlog -work work ./*.sv
+Pass 1. Scanning modules hierarchy.
+Info: VCP2113 Module \$root found in current working library.
+Info: VCP2113 Module intf_cmd found in current working library.
+Info: VCP2113 Module intf_cmd.intf_cmd.master found in current working library.
+Info: VCP2113 Module intf_cmd.intf_cmd.slave found in current working library.
+Info: VCP2113 Module cmd_slave found in current working library.
+Info: VCP2113 Module cmd_master found in current working library.
+Pass 2. Processing instantiations.
+Pass 3. Processing behavioral statements.
+Running Optimizer.
+ELB/DAG code generating.
+Info: VCP2113 Module \$root found in current working library.
+Unit top modules: tb_intf_cmd.
+$root top modules: cmd_ncmd_intf intf_demux tb_intf_cmd.
+Compile success 0 Errors 0 Warnings  Analysis time: 0[s].
+Warning: ALOG: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+done
+# SIMULATE LOGGING TO SIM.LOG, ALLOWING READ ACCESS TO SIGNALS, USING LIBRARY WORK, AND WITH TEST BENCH XXX
+vsim -log sim.log +access +r -lib work tb_intf_cmd

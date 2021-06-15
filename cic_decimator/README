@@ -1,0 +1,9 @@
+Purpose: The purpose of this module is to decimate by 313 (using
+a compensated CIC filter structure). The corresponding system
+has a passband that is in the -0.25 to 0.25 of the Nyquist
+bandwidth at the slower sampling rate (-0.25/313 to 0.25/313 for
+the faster sampling rate). The passband rippler is guaranteed
+(see associated tests) to be less than 0.5 dB.
+
+Designer: Daryl (daryl@siglabs.com)
+Date: 3/14/2017
