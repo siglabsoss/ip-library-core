@@ -1,0 +1,7 @@
+Purpose: The purpose of this module is to downconvert data from
+a suitable channel in the 32.25 MHz bandwidth from one of the
+possible IF frequencies. It is driven by the real-time needs
+of the downstream modules (DAC, etc.).
+
+Designer: Daryl (daryl@siglabs.com)
+Date: 4/21/2017

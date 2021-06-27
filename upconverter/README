@@ -1,0 +1,59 @@
+Digital Upconverter
+---------------------
+
+Overview: This block converts a signal at baseband to a -39 MHz IF and
+then outputs the real part (resulting in a real signal centered at 39 MHz).
+It includes two halfband interpolation filters for a total upsampling by
+4. If the input rate is 31.25 MS/s, the output rate is 125 MS/s. The output
+The input is a a quadrature signal while the output is real-valued.
+
+This iteration of the upconverter consists of the halfband filters,
+multipliers to bring the input samples to IF, and a table look-up for
+the sine/cosine values needed.
+
+Input Signaling Ports:
+
+========================+=========+======================================
+Name                    | Width   | Description
+========================+=========+======================================
+i_inph_data             | 16-bits | In-phase baseband sample
+------------------------+---------+--------------------------------------
+i_quad_data             | 16-bits | Quadrature baseband sample
+------------------------+---------+--------------------------------------
+o_ready                 |  1-bit  | Strobe that indicates two samples are
+                        |         | ready to be read at the above ports.
+                        |         | Samples should always be ready from
+                        |         | the upstream block
+------------------------+---------+--------------------------------------
+i_clock                 |  1-bit  | Clock signal
+------------------------+---------+---------------------------------------
+i_reset                 |  1-bit  | Synchronous reset signal
+------------------------+---------+---------------------------------------
+
+Output Signaling Ports:
+
+========================+=========+======================================
+Name                    | Width   | Description
+========================+=========+======================================
+o_inph_data             | 16-bits | This is the real part of the
+                        |         | downconverted/decimated output
+                        |         | signal.
+------------------------+---------+---------------------------------------
+o_quad_data             | 16-bits | This is the imaginary part of the
+                        |         | downconverted/decimated output
+                        |         | signal.
+------------------------+---------+---------------------------------------
+i_ready                 | 1-bit   | Strobe signal that indicates that
+                        |         | another output is needed by the
+                        |         | downstream block. The sample is
+                        |         | guaranteed to be ready
+------------------------+---------+---------------------------------------
+
+Note: This HDL uses inference for a big block RAM that is used as a ROM.
+To correctly infer this, the file "duc_sincos.mif" must be added to the
+directory where the synthesizer is run. If not, then the block RAM will
+not be initialized correctly, and the output will be held at a zero
+value.
+
+Designer: Daryl (daryl@siglabs.com)
+Date: 2/22/2017

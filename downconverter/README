@@ -1,0 +1,61 @@
+Digital Downconverter
+---------------------
+
+Overview: This block converts a signal at a -39 MHz IF to baseband. The
+downconverter demodulates the input to recenter the IF frequency at DC,
+then the signal goes through 3 halfband FIR filters. Each one decimates
+the input by 2, so the output signal is 8x decimated compared to the
+input signal. The input is a real-valued signal operating at twice
+the clock frequency (two samples are received at a time). If these two
+samples come in on every clock cycle, then an output sample is available
+every fourth clock cycle.
+
+This iteration of the downconverter consists of a table look-up for the
+sine/cosine values needed, multipliers to bring the input samples to
+baseband, and the halfband filters.
+
+Input Ports:
+
+========================+=========+======================================
+Name                    | Width   | Description
+========================+=========+======================================
+i_inph_data             | 16-bits | Real-valued ADC sample at time n
+------------------------+---------+--------------------------------------
+i_inph_delay_data       | 16-bits | Real-valued ADC sample at time n + 1
+------------------------+---------+--------------------------------------
+i_valid                 |  1-bit  | Strobe that indicates two samples are
+                        |         | ready at the above ports. If samples
+                        |         | are always ready, this can be tied
+                        |         | high.
+------------------------+---------+--------------------------------------
+i_clock                 |  1-bit  | Clock signal
+------------------------+---------+---------------------------------------
+i_reset                 |  1-bit  | Synchronous reset signal
+------------------------+---------+---------------------------------------
+
+Output Ports:
+
+========================+=========+======================================
+Name                    | Width   | Description
+========================+=========+======================================
+o_inph_data             | 16-bits | This is the real part of the
+                        |         | downconverted/decimated output
+                        |         | signal.
+------------------------+---------+---------------------------------------
+o_quad_data             | 16-bits | This is the imaginary part of the
+                        |         | downconverted/decimated output
+                        |         | signal.
+------------------------+---------+---------------------------------------
+o_valid                 | 1-bit   | Strobe signal that indicates when an
+                        |         | output is available to be read from
+                        |         | the two output ports above.
+------------------------+---------+---------------------------------------
+
+Note: This HDL uses inference for a big block RAM that is used as a ROM.
+To correctly infer this, the file "ddc_sincos.mif" must be added to the
+directory where the synthesizer is run. If not, then the block RAM will
+not be initialized correctly, and the output will be held at a zero
+value.
+
+Designer: Daryl (daryl@siglabs.com)
+Date: 2/22/2017

@@ -1,0 +1,60 @@
+ELBREAD: Elaboration process.
+ELBREAD: Warning: Module 'fmc_slave' does not have a `timescale directive, but previous modules do.
+ELBREAD: Elaboration time 0.0 [s].
+KERNEL: Main thread initiated.
+KERNEL: Kernel process initialization phase.
+KERNEL: Time resolution set to 100ps.
+ELAB2: Elaboration final pass...
+ELAB2: Create instances ...
+ELAB2: Create instances complete.
+SLP: Started
+SLP: Elaboration phase ...
+SLP: Elaboration phase ... done : 0.0 [s]
+SLP: Generation phase ...
+SLP: Generation phase ... done : 0.3 [s]
+SLP: Finished : 0.3 [s]
+SLP: 0 primitives and 14 (93.33%) other processes in SLP
+SLP: 28 (43.75%) signals in SLP and 21 (32.81%) interface signals
+ELAB2: Elaboration final pass complete - time: 0.3 [s].
+KERNEL: SLP loading done - time: 0.0 [s].
+KERNEL: Warning: You are using the Active-HDL Lattice Edition. The performance of simulation is running at a reduced rate.
+KERNEL: Warning: Contact Aldec for available upgrade options - sales@aldec.com.
+KERNEL: SLP simulation initialization done - time: 0.0 [s].
+KERNEL: Kernel process initialization done.
+Allocation: Simulator allocated 7110 kB (elbread=1280 elab2=5683 kernel=146 sdf=0)
+KERNEL: ASDB file was created in location C:\FPGA\ip-library\fmc_slave\sim\wave.asdb
+# LOG ALL SIGNALS IN DESIGN
+trace -rec *
+VSIMSA: 64 signal(s) traced.
+# RUN UNTIL NO MORE EVENTS TO SIMULATE
+run -all
+KERNEL: FMC WRITE (ADDR = 0x0000000, DATA = 0xdeadbeef)
+KERNEL: COMMAND & CONTROL WRITE (ADDR: 0x0000000, WDATA: 0xdeadbeef)
+KERNEL: FMC WRITE (ADDR = 0x0000004, DATA = 0xcafebabe)
+KERNEL: COMMAND & CONTROL WRITE (ADDR: 0x0000004, WDATA: 0xcafebabe)
+KERNEL: COMMAND & CONTROL READ (ADDR: 0x0000008, RDATA: 0xcafebabe)
+KERNEL: FMC READ (ADDR = 0x0000008, RDATA = 0xcafebabe)
+KERNEL: COMMAND & CONTROL READ (ADDR: 0x000000c, RDATA: 0xcafebabe)
+KERNEL: FMC READ (ADDR = 0x000000c, RDATA = 0xcafebabe)
+KERNEL: FMC WRITE (ADDR = 0x0000010, DATA = 0xabcdabcd)
+KERNEL: COMMAND & CONTROL WRITE (ADDR: 0x0000010, WDATA: 0xabcdabcd)
+KERNEL: COMMAND & CONTROL READ (ADDR: 0x0000014, RDATA: 0xabcdabcd)
+KERNEL: FMC READ (ADDR = 0x0000014, RDATA = 0xabcdabcd)
+KERNEL: COMMAND & CONTROL READ (ADDR: 0x0000018, RDATA: 0xabcdabcd)
+KERNEL: FMC READ (ADDR = 0x0000018, RDATA = 0xabcdabcd)
+KERNEL: FMC WRITE (ADDR = 0x000001c, DATA = 0xa5a5a5a5)
+KERNEL: COMMAND & CONTROL WRITE (ADDR: 0x000001c, WDATA: 0xa5a5a5a5)
+RUNTIME: RUNTIME_0068 tb_fmc_slave.sv (152): $finish called.
+KERNEL: Time: 44051800 ps,  Iteration: 0,  Instance: /tb_fmc_slave,  Process: @INITIAL#STIMULUS@.
+KERNEL: stopped at time: 44051800 ps
+VSIM: Simulation has finished. There are no more test vectors to simulate.
+# LAUNCH ACTIVE-HDL AND VIEW WAVEFORM
+#
+# Use -do "open -asdb wave.asdb" if you don't have a wave.do file you'd like to use.
+#
+# Use -do "view wave; waveconnect wave.asdb; do wave.do; wavezoom -fit" if you do.
+#runexe $$ACTIVEHDLBIN\avhdl.exe -nosplash -do "open -asdb wave.asdb" "view wave; waveconnect wave.asdb" 
+runexe $$ACTIVEHDLBIN\avhdl.exe -nosplash -do "view wave; waveconnect wave.asdb; do wave.do; wavezoom -fit" 
+# PEACE OUT
+bye
+VSIM: Simulation has finished.

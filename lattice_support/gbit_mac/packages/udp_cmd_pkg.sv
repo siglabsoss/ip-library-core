@@ -2,7 +2,7 @@
  * Package: udp_cmd_pkg 
  * 
  * Handy constants and functions related to Ethernet UDP based command and control as layed out in
- * https://superguppy.siglabs.com/wiki/Graviton_Ethernet_Interface
+ * https://FIXME/wiki/Graviton_Ethernet_Interface
  * 
  */
  
