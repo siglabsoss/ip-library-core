@@ -1,0 +1,16 @@
+
+/*
+ * Power on config register settings for the TI DAC on Graviton (DAC3484)
+ *
+ * THE ORDER OF THESE CONFIG WORDS MIGHT MATTER.  REFER TO THE DATASHEET IF UNSURE.
+ */
+ 
+ 
+02f080 // config2 
+0700e7 // config7 
+1f8880 // config31 - set mixer AB, mixer CD, and nco sync sources to sif sync
+208800 // config32 - FIFO read and write pointers synchronized via serial interface (sif) sync
+241d00 // config36 - set clkdly to 0b111 which corresponds to 350ps
+1b0800 // config27 - puts the fuses to sleep. MUST BE THE LAST CONFIG WORD WRITTEN!
+1f8882 // config31 - keep mixer AB, mixer CD, and nco sync sources to sif sync and issue sif sync
+1f8880 // config31 - keep mixer AB, mixer CD, and nco sync sources to sif sync and clear sif sync

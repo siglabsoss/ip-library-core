@@ -1,0 +1,131 @@
+`timescale 10ps / 10ps
+
+`default_nettype none
+
+module var_freq_upconverter #(
+    parameter integer WIDTH = 16,
+    parameter PWIDTH = 23,
+    parameter SWIDTH = 18
+) (
+    input  wire logic [WIDTH-1:0] i_inph_data,
+    input  wire logic [WIDTH-1:0] i_quad_data,
+    output wire logic             o_ready,
+    output wire logic [WIDTH-1:0] o_inph_data,
+    output wire logic [WIDTH-1:0] o_quad_data,
+    input  wire logic             i_ready,
+    input  wire logic             i_clock,
+    input  wire logic             i_reset,
+    input  wire logic [PWIDTH-1:0]i_phase_start,
+    input  wire logic [PWIDTH-1:0]i_phase_increment,  
+    output logic signed [36-1:0] cosine_reg_n1,
+	output logic signed [36-1:0] sine_reg_n1    
+);
+
+logic signed [WIDTH-1:0] cascade_inph_reg_n1;
+logic signed [WIDTH-1:0] cascade_quad_reg_n1;
+
+duc_hb_cascade #(
+    .WIDTH(WIDTH))
+duc_hb_cascade_inst (
+    .i_inph_data(i_inph_data        ),
+    .i_quad_data(i_quad_data        ),
+    .o_ready    (o_ready            ),
+    .o_inph_data(cascade_inph_reg_n1),
+    .o_quad_data(cascade_quad_reg_n1),
+    .i_ready    (i_ready            ),
+    .i_clock    (i_clock            ),
+    .i_reset    (i_reset            ));
+
+// Pipeline Stage 0
+//logic signed [36-1:0] cosine_reg_n1 /* synthesis syn_keep=1 */;
+//logic signed [36-1:0] sine_reg_n1 /* synthesis syn_keep=1 */;
+logic o_valid;
+dds_top #(
+	.PWIDTH             (PWIDTH            ), 
+	.SWIDTH             (SWIDTH            )
+	) dds_top (
+	.i_clk              (i_clock             ), 
+	.i_reset_p          (i_reset         ), 
+	.i_enable           (i_ready          ), 
+	.i_phase_start      (i_phase_start     ), 
+	.i_phase_increment  (i_phase_increment ), 
+	.o_cosine           (cosine_reg_n1          ), 
+	.o_sine             (sine_reg_n1            ), 
+	.o_valid            ( o_valid  ));
+	
+
+// Pipeline Stage 0
+logic signed [WIDTH-1:0] inph_data_reg0;
+logic signed [WIDTH-1:0] quad_data_reg0;
+logic signed [36-1:0] cosine_reg0;
+logic signed [36-1:0] sine_reg0;
+always_ff @(posedge i_clock) begin
+    if (i_ready == 1'b1) begin
+        inph_data_reg0 <= cascade_inph_reg_n1;
+        quad_data_reg0 <= cascade_quad_reg_n1;
+        cosine_reg0 <= cosine_reg_n1;
+        sine_reg0 <= sine_reg_n1;
+    end
+end
+
+// Pipeline Stages 1, 2, and 3
+logic signed [36+WIDTH-1:0] inph_inph_data_reg1;
+logic signed [36+WIDTH-1:0] inph_quad_data_reg1;
+logic signed [36+WIDTH-1:0] quad_inph_data_reg1;
+logic signed [36+WIDTH-1:0] quad_quad_data_reg1;
+
+logic signed [36+WIDTH:0] inph_data_reg2;
+logic signed [36+WIDTH:0] quad_data_reg2;
+
+logic signed [WIDTH:0] inph_data_reg3;
+logic signed [WIDTH:0] quad_data_reg3;
+
+logic signed [WIDTH-1:0] inph_data_reg4;
+logic signed [WIDTH-1:0] quad_data_reg4;
+
+always_ff @(posedge i_clock) begin
+    if (i_ready == 1'b1) begin
+        // Pipeline Stage 1
+        inph_inph_data_reg1 <= $signed(inph_data_reg0) * $signed(cosine_reg0);
+        inph_quad_data_reg1 <= $signed(inph_data_reg0) * $signed(sine_reg0);
+        quad_inph_data_reg1 <= $signed(quad_data_reg0) * $signed(cosine_reg0);
+        quad_quad_data_reg1 <= $signed(quad_data_reg0) * $signed(sine_reg0);
+
+        // Pipeline Stage 2
+        inph_data_reg2 <= { inph_inph_data_reg1[36+WIDTH-1], inph_inph_data_reg1 }
+            + { quad_quad_data_reg1[36+WIDTH-1], quad_quad_data_reg1 };
+        quad_data_reg2 <= { quad_inph_data_reg1[36+WIDTH-1], quad_inph_data_reg1 }
+            - { inph_quad_data_reg1[36+WIDTH-1], inph_quad_data_reg1 };
+
+        // Pipeline Stage 2 - Intentional gain of 2 added here to account for single-ended transmit
+        inph_data_reg3 <= (inph_data_reg2[36+WIDTH:34] + 1'b1) >> 1;
+        quad_data_reg3 <= (quad_data_reg2[36+WIDTH:34] + 1'b1) >> 1;
+
+        // Pipeline Stage 3
+        if (inph_data_reg3[WIDTH] != inph_data_reg3[WIDTH-1]) begin
+            if (inph_data_reg3[WIDTH] == 1'b1) begin
+                inph_data_reg4 <= { 1'b1, { (WIDTH-1){1'b0} } };
+            end else begin
+                inph_data_reg4 <= { 1'b0, { (WIDTH-1){1'b1} } };
+            end
+        end else begin
+            inph_data_reg4 <= inph_data_reg3;
+        end
+        if (quad_data_reg3[WIDTH] != quad_data_reg3[WIDTH-1]) begin
+            if (quad_data_reg3[WIDTH] == 1'b1) begin
+                quad_data_reg4 <= { 1'b0, { (WIDTH-1){1'b1} } };
+            end else begin
+                quad_data_reg4 <= { 1'b1, { (WIDTH-1){1'b0} } };
+            end
+        end else begin
+            quad_data_reg4 <= quad_data_reg3;
+        end
+    end
+end
+
+assign o_inph_data = inph_data_reg4;
+assign o_quad_data = quad_data_reg4;
+
+endmodule: var_freq_upconverter
+
+`default_nettype wire

@@ -1,0 +1,34 @@
+log -assert "console.log"
+# CREATE A LIBRARY CALLED WORK
+vlib work
+ALIB: Library `work' attached.
+work = C:\FPGA\ip-library\ecp5_slave_serial_programmer\sim\work\work.lib
+# COMPILE VERILOG AND SYSTEM VERILOG SOURCES 
+vlog -work work ../hdl/*.sv 
+Pass 1. Scanning modules hierarchy.
+Info: VCP2113 Module \$root found in current working library.
+Pass 2. Processing instantiations.
+Pass 3. Processing behavioral statements.
+Running Optimizer.
+ELB/DAG code generating.
+Info: VCP2113 Module \$root found in current working library.
+$root top modules: ecp5_slave_serial_programmer_tb.
+Compile success 0 Errors 0 Warnings  Analysis time: 0[s].
+Warning: ALOG: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+done
+vlog -work work ./*.sv
+Pass 1. Scanning modules hierarchy.
+Info: VCP2113 Module \$root found in current working library.
+Info: VCP2113 Module ecp5_slave_serial_programmer found in current working library.
+Pass 2. Processing instantiations.
+Pass 3. Processing behavioral statements.
+Running Optimizer.
+ELB/DAG code generating.
+Info: VCP2113 Module \$root found in current working library.
+Unit top modules: tb_ecp5_slave_serial_programmer.
+$root top modules: ecp5_slave_serial_programmer_tb tb_ecp5_slave_serial_programmer.
+Compile success 0 Errors 0 Warnings  Analysis time: 0[s].
+Warning: ALOG: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+done
+# SIMULATE LOGGING TO SIM.LOG, ALLOWING READ ACCESS TO SIGNALS, USING LIBRARY WORK, AND WITH TEST BENCH XXX
+vsim -log sim.log +access +r -lib work tb_ecp5_slave_serial_programmer

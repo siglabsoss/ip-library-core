@@ -4,7 +4,7 @@
  * Consumes UDP Packets that have been queued by the udp_pkt_router for the port established for Ethernet UDP command and control and 
  * issues the appropriate Command Bus Command.
  * 
- * The operation of this module adheres to the details provided here: https://superguppy.siglabs.com/wiki/SigLabs_Debug_Interface
+ * The operation of this module adheres to the details provided here: https://FIXME/wiki/SigLabs_Debug_Interface
  * 
  * TODO: Add support for memory write and read commands.
  * 
@@ -552,7 +552,7 @@ module udp_cmd #(
         .i_seq_num_prsnt          (1'b1), 
         .i_seq_num                (resp_meta_fifo_rdata[RESP_META_FIFO_WIDTH-1:(RESP_META_FIFO_WIDTH-(8*UDP_SEQ_NUM_BYTES))]), 
         .i_meta_data_prsnt        (1'b1),
-        .i_meta_data              (resp_meta_fifo_rdata[(RESP_META_FIFO_WIDTH)-(8*UDP_SEQ_NUM_BYTES)-1:0]), // used for MSG_ACK, MSG_NACK, MSG_UNKNOWN message IDs and MSG_ID of request being replied to.  See: https://superguppy.siglabs.com/wiki/SigLabs_Debug_Interface#Control_Message_Packet_Structure
+        .i_meta_data              (resp_meta_fifo_rdata[(RESP_META_FIFO_WIDTH)-(8*UDP_SEQ_NUM_BYTES)-1:0]), // used for MSG_ACK, MSG_NACK, MSG_UNKNOWN message IDs and MSG_ID of request being replied to.  See: https://FIXME/wiki/SigLabs_Debug_Interface#Control_Message_Packet_Structure
         .o_eth_avail              (o_eth_avail             ), 
         .o_eth_eof                (o_eth_eof               ), 
         .o_eth_byte_vld           (o_eth_byte_vld          ), 
