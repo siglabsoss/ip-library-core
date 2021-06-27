@@ -61,6 +61,9 @@ module eth_frame_router #(
     output reg   o_eth_frame_vlan_error,
     output reg   o_unsupported_eth_type_error
 
+    // output [7:0] snap_cbuf_rd_fsm_state,
+    // output [7:0] snap_cbuf_wr_fsm_state
+
 
 );
     
@@ -86,6 +89,9 @@ module eth_frame_router #(
     logic                      cbuf_wren;
     logic                      cbuf_empty;     // happens after resetting the cbuf or after reading the last valid ethernet frame byte in the cbuf
     
+    // logic [7:0]                snap_cbuf_rd_fsm_state;
+    // logic [7:0]                snap_cbuf_wr_fsm_state;
+
     enum {
         WAIT_FOR_NEXT_ETH_FRAME,
         SKIP_MAC_ADDRS,
@@ -105,6 +111,9 @@ module eth_frame_router #(
         ROUTE_IPV4_PKT,
         SKIP_PKT
     } cbuf_rd_fsm_state;
+
+    // assign snap_cbuf_rd_fsm_state = cbuf_rd_fsm_state;
+    // assign snap_cbuf_wr_fsm_state = cbuf_wr_fsm_state;
     
     logic [15:0] ethtype;
     logic        fatal_error;

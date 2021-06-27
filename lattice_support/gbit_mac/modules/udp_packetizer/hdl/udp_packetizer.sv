@@ -90,9 +90,11 @@ module udp_packetizer #(
     //synthesis translate_off
     
     initial begin
+        $display("Sizes for udp_packetizer");
         $display("FRAME_FIFO_DEPTH      : %0d", FRAME_FIFO_DEPTH);
         $display("FRAME_FIFO_AFULL_LVL  : %0d", FRAME_FIFO_AFULL_LVL);
         $display("FRAME_AVAIL_CNTR_BITS : %0d", FRAME_AVAIL_CNTR_BITS);
+        $display("");
     end
     
     //synthesis translate_on
