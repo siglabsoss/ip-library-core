@@ -60,6 +60,13 @@ module mac_tx_arbiter #(
 
     // THESE ERROR STATUS SIGNALS GET ASSERTED FOR ONE CLOCK IF THEIR RESPECTIVE ERROR OCCURS.  YOU NEED EXTERNAL LOGIC TO KEEP TRACK OF THESE ERRORS IF DESIRED.
     output reg                        o_eth_frame_fifo_overflow
+
+    // output reg [0:NUM_INPUTS-1] rr_arb_grant_mask,
+    // output reg [0:NUM_INPUTS-1] rr_arb_grant,
+    // output reg [0:NUM_INPUTS-1] rr_arb_req_raw,
+    // output reg [0:NUM_INPUTS-1] rr_arb_req_masked
+
+
 //    output reg       [NUM_INPUTS-1:0] o_src_eth_frame_too_long_err 
 );
     
@@ -68,6 +75,23 @@ module mac_tx_arbiter #(
     localparam int unsigned ETH_FRAME_CNTR_BITS       = $clog2(ETH_FRAME_FIFO_DEPTH); // a few more bits than we actually need since the minimum ethernet frame byte size is actually 60 bytes since we let the Lattice Gbit MAC handle the Frame Checksum insertion 
 //    localparam int unsigned ETH_FRAME_BYTE_CNTR_BITS  = $clog2(ETH_FRAME_MAX_BYTES);
     localparam int unsigned RR_ARB_SRC_INDEX_BITS     = $clog2(NUM_INPUTS);
+
+
+    //synthesis translate_off
+    
+    initial begin
+        $display("Sizes for mac_tx_arbiter");
+        $display("NUM_INPUTS                : %0d", NUM_INPUTS);
+        $display("MAX_ETH_FRAME_BUFFERS     : %0d", MAX_ETH_FRAME_BUFFERS);
+        $display("ETH_FRAME_BYTES_TO_BUFFER : %0d", ETH_FRAME_BYTES_TO_BUFFER);
+        $display("ETH_FRAME_FIFO_DEPTH      : %0d", ETH_FRAME_FIFO_DEPTH);
+        $display("ETH_FRAME_CNTR_BITS       : %0d", ETH_FRAME_CNTR_BITS);
+        $display("RR_ARB_SRC_INDEX_BITS     : %0d", RR_ARB_SRC_INDEX_BITS);
+        $display("");
+    end
+    
+    //synthesis translate_on
+
     
     
     logic [0:NUM_INPUTS-1] rr_arb_grant_mask;
@@ -83,9 +107,76 @@ module mac_tx_arbiter #(
     logic                     [8:0] eth_frame_fifo_dout;
     logic                           eth_frame_fifo_dout_vld;
     logic [ETH_FRAME_CNTR_BITS-1:0] eth_frame_fifo_frame_cntr;
+    logic                           eth_frame_fifo_afull;      // has no load
 
-    logic                           tx_fifoeof_reg; 
-    
+    logic                           tx_fifoeof_reg;
+
+
+
+`ifdef VERILATE_DEF
+
+    // break signals out for easier debug
+    logic       s0_valid;
+    logic       s0_ready;
+    logic [7:0] s0_data;
+    logic       s0_last;
+
+    logic       s1_valid;
+    logic       s1_ready;
+    logic [7:0] s1_data;
+    logic       s1_last;
+
+    logic       s2_valid;
+    logic       s2_ready;
+    logic [7:0] s2_data;
+    logic       s2_last;
+    reg  [31:0] s2_last_cnt;
+
+    logic       s3_valid;
+    logic       s3_ready;
+    logic [7:0] s3_data;
+    logic       s3_last;
+    reg  [31:0] s3_last_cnt;
+
+    assign s0_valid = i_src_byte_vld[0];
+    assign s0_ready = o_src_byte_rd[0];
+    assign s0_data  = i_src_byte[0];
+    assign s0_last  = i_src_last_byte[0];
+
+    assign s1_valid = i_src_byte_vld[1];
+    assign s1_ready = o_src_byte_rd[1];
+    assign s1_data  = i_src_byte[1];
+    assign s1_last  = i_src_last_byte[1];
+
+    assign s2_valid = i_src_byte_vld[2];
+    assign s2_ready = o_src_byte_rd[2];
+    assign s2_data  = i_src_byte[2];
+    assign s2_last  = i_src_last_byte[2];
+
+    assign s3_valid = i_src_byte_vld[3];
+    assign s3_ready = o_src_byte_rd[3];
+    assign s3_data  = i_src_byte[3];
+    assign s3_last  = i_src_last_byte[3];
+
+    always_ff @(posedge i_txmac_clk) begin
+        if (i_txmac_srst) begin
+            s2_last_cnt <= '0;
+            s3_last_cnt <= '0;
+        end else begin
+            if( s2_last ) begin
+                s2_last_cnt <= s2_last_cnt + 1;
+            end
+            if( s3_last ) begin
+                s3_last_cnt <= s3_last_cnt + 1;
+            end
+        end
+    end
+
+    logic eth_frame_fifo_last;
+    assign eth_frame_fifo_last = eth_frame_fifo_din[8];
+
+`endif
+
 /* verilator lint_on LITENDIAN */
 
 //    logic [ETH_FRAME_BYTE_CNTR_BITS-1:0] eth_frame_byte_cntr;
@@ -95,7 +186,7 @@ module mac_tx_arbiter #(
      * ROUND-ROBIN ARBITER LOGIC
      */
     
-    assign rr_arb_req_raw    = i_src_byte_vld;
+    assign rr_arb_req_raw    = i_src_byte_vld;                    // think of this as the source request line to the round-robin arbiter
     assign rr_arb_req_masked = i_src_byte_vld & ~rr_arb_grant_mask;
     assign o_src_byte_rd     = rr_arb_grant & ~{NUM_INPUTS{eth_frame_fifo_full}};
 
@@ -145,6 +236,8 @@ module mac_tx_arbiter #(
     assign eth_frame_fifo_wren = ( ~eth_frame_fifo_full & o_src_byte_rd[rr_arb_src_index] & i_src_byte_vld[rr_arb_src_index] ) ? 1 : 0; // only write when the fifo isn't full, there's valid data, and we're reading it.
     assign eth_frame_fifo_din  = {i_src_last_byte[rr_arb_src_index], i_src_byte[rr_arb_src_index]};
 
+
+
 `ifndef VERILATE_DEF
     generate
         
@@ -177,7 +270,7 @@ module mac_tx_arbiter #(
                 .Q           (eth_frame_fifo_dout),
                 .Empty       (o_tx_fifoempty),
                 .AlmostEmpty (),
-                .AlmostFull  ()); 
+                .AlmostFull  (eth_frame_fifo_afull)); 
             
         end else begin
 
@@ -208,7 +301,7 @@ module mac_tx_arbiter #(
                 .Q           (eth_frame_fifo_dout),
                 .Empty       (o_tx_fifoempty),
                 .AlmostEmpty (),
-                .AlmostFull  ());
+                .AlmostFull  (eth_frame_fifo_afull));
             
         end
     endgenerate
@@ -226,7 +319,7 @@ module mac_tx_arbiter #(
         .we           (eth_frame_fifo_wren),
         .clr          (1'b0),
         .full         (eth_frame_fifo_full),
-        .afull        (),
+        .afull        (eth_frame_fifo_afull),
         .afull_n      (),
         .o_afull_n_d  (),
         .re           (i_tx_macread),
@@ -270,23 +363,35 @@ module mac_tx_arbiter #(
     /* 
      * KEEP TRACK OF HOW MANY COMPLETE ETHERNET FRAMES ARE IN THE FIFO
      */
+    logic [7:0] cnt_state;
     always_ff @(posedge i_txmac_clk) begin
         if (i_txmac_srst) begin
             eth_frame_fifo_frame_cntr <= '0;
+            cnt_state <= 8'h0;
         end else begin
+
+            cnt_state <= 8'h41; // A
             
             // NOTE: THE ORDER OF THESE IF STATEMENTS IS CRITICAL
 
             if (eth_frame_fifo_wren & eth_frame_fifo_din[8]) begin // end of ethernet frame marker written into output fifo so there's now another full ethernet frame ready to be consumed
                 eth_frame_fifo_frame_cntr <= eth_frame_fifo_frame_cntr + 1;
+                cnt_state <= 8'h42; // B
             end
             
             if (o_tx_fifoeof & eth_frame_fifo_dout_vld) begin // end of frame mark read out of output fifo so there's now one fewer ethernet frames ready to be consumed
                 eth_frame_fifo_frame_cntr <= eth_frame_fifo_frame_cntr - 1;
+                cnt_state <= 8'h43; // C
             end
             
-            if (eth_frame_fifo_wren & eth_frame_fifo_din[8] & o_tx_fifoempty & eth_frame_fifo_dout_vld) begin // simultaneous packet read out of fifo and new one written into fifo
+            if (
+                  eth_frame_fifo_wren
+                & eth_frame_fifo_din[8] // eth_frame_fifo_last
+                & o_tx_fifoeof
+                & eth_frame_fifo_dout_vld ) begin // simultaneous packet read out of fifo and new one written into fifo
+
                 eth_frame_fifo_frame_cntr <= eth_frame_fifo_frame_cntr;
+                cnt_state <= 8'h44; // D
             end
 
         end
